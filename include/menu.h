@@ -8,18 +8,37 @@ private:
     Database& db;
     
     void displayMainMenu();
+    
+    // Меню для сотрудников
     void handleAddEmployee();
     void handleViewEmployees();
     void handleUpdateEmployee();
     void handleDeleteEmployee();
-    void handleDepartmentReport();
-    void handleSearch();
     void handleFullInfo();
-    void handleAddDepartment();
-    void handleAddPosition();
-    void handleClearEmployees();
-    void handleDeleteDepartment();
     
+    // Меню для отделов
+    void handleAddDepartment();
+    void handleDeleteDepartment();
+    void handleDepartmentReport();
+    
+    // Меню для должностей
+    void handleAddPosition();
+    
+    // Меню для проектов
+    void handleAddProject();
+    void handleViewProjects();
+    void handleDeleteProject();
+    void handleAssignEmployeeToProject();
+    void handleProjectsReport();
+    
+    // Аналитические отчеты
+    void handleSearch();
+    void handleEmployeesWithProjects();
+    void handleAboveAvgSalary();
+    void handleBudgetAnalysis();
+    
+    // Служебные
+    void handleClearEmployees();
     bool validateEmail(const string& email);
     bool validatePhone(const string& phone);
     

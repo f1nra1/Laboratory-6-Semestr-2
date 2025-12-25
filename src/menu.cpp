@@ -2,14 +2,12 @@
 #include <iostream>
 #include <iomanip>
 #include <limits>
-#include <regex>
-#include <locale>
-#include <codecvt>
-#include <cstring>
+#include <sstream>
+
 using namespace std;
 
 // Функция для подсчета визуальной длины строки с учетом UTF-8
-int visual_length(const string& str) {
+static int visual_length(const string& str) {
     int len = 0;
     const char* s = str.c_str();
     while (*s) {
@@ -20,9 +18,8 @@ int visual_length(const string& str) {
 }
 
 // Функция для правильного выравнивания строк с кириллицей
-string align_string(const string& str, int width, bool left_align = true) {
+static string align_string(const string& str, int width, bool left_align = true) {
     int visual_len = visual_length(str);
-    int byte_len = str.length();
     int padding = width - visual_len;
     
     if (padding <= 0) {
@@ -39,30 +36,48 @@ string align_string(const string& str, int width, bool left_align = true) {
 Menu::Menu(Database& database) : db(database) {}
 
 void Menu::displayMainMenu() {
-    cout << "\n========== Учет сотрудников ==========\n";
-    cout << "1. Добавить сотрудника\n";
-    cout << "2. Просмотр сотрудников\n";
-    cout << "3. Обновить данные\n";
-    cout << "4. Удалить сотрудника\n";
-    cout << "5. Статистика по отделам\n";
-    cout << "6. Поиск по отделу\n";
-    cout << "7. Полная информация\n";
-    cout << "8. Добавить отдел\n";
-    cout << "9. Добавить должность\n";
-    cout << "10. Очистить всех сотрудников\n";
-    cout << "11. Удалить отдел\n";
-    cout << "0. Выход\n";
-    cout << "Выбор: ";
+    cout << "\n╔═══════════════════════════════════════════════╗\n";
+    cout << "║        СИСТЕМА УЧЕТА СОТРУДНИКОВ             ║\n";
+    cout << "╚═══════════════════════════════════════════════╝\n";
+    cout << "\n┌─── СОТРУДНИКИ ───────────────────────────────┐\n";
+    cout << "│ 1.  Добавить сотрудника                      │\n";
+    cout << "│ 2.  Просмотр сотрудников                     │\n";
+    cout << "│ 3.  Обновить данные сотрудника               │\n";
+    cout << "│ 4.  Удалить сотрудника                       │\n";
+    cout << "│ 5.  Полная информация о сотрудниках          │\n";
+    cout << "└──────────────────────────────────────────────┘\n";
+    cout << "\n┌─── ОТДЕЛЫ И ДОЛЖНОСТИ ───────────────────────┐\n";
+    cout << "│ 6.  Добавить отдел                           │\n";
+    cout << "│ 7.  Удалить отдел                            │\n";
+    cout << "│ 8.  Добавить должность                       │\n";
+    cout << "└──────────────────────────────────────────────┘\n";
+    cout << "\n┌─── ПРОЕКТЫ ──────────────────────────────────┐\n";
+    cout << "│ 9.  Добавить проект                          │\n";
+    cout << "│ 10. Просмотр проектов                        │\n";
+    cout << "│ 11. Назначить сотрудника на проект           │\n";
+    cout << "│ 12. Удалить проект                           │\n";
+    cout << "└──────────────────────────────────────────────┘\n";
+    cout << "\n┌─── ОТЧЕТЫ И АНАЛИТИКА ───────────────────────┐\n";
+    cout << "│ 13. Статистика по отделам                    │\n";
+    cout << "│ 14. Поиск по отделу                          │\n";
+    cout << "│ 15. Сотрудники и их проекты                  │\n";
+    cout << "│ 16. Проекты со статистикой                   │\n";
+    cout << "│ 17. Сотрудники с зарплатой выше средней      │\n";
+    cout << "│ 18. Анализ бюджета отделов                   │\n";
+    cout << "└──────────────────────────────────────────────┘\n";
+    cout << "\n┌─── СЛУЖЕБНОЕ ────────────────────────────────┐\n";
+    cout << "│ 19. Очистить всех сотрудников                │\n";
+    cout << "│ 0.  Выход                                    │\n";
+    cout << "└──────────────────────────────────────────────┘\n";
+    cout << "\nВыбор: ";
 }
 
 bool Menu::validateEmail(const string& email) {
-    const regex pattern(R"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})");
-    return regex_match(email, pattern);
+    return true;
 }
 
 bool Menu::validatePhone(const string& phone) {
-    const regex pattern(R"(^(\+7|8|7)?[0-9]{10}$)");
-    return regex_match(phone, pattern);
+    return true;
 }
 
 void Menu::run() {
@@ -81,74 +96,48 @@ void Menu::run() {
         
         switch (choice) {
             case 0:
-                cout << "Выход из программы\n";
+                cout << "\nВыход из программы. До свидания!\n";
                 return;
-            case 1:
-                handleAddEmployee();
-                break;
-            case 2:
-                handleViewEmployees();
-                break;
-            case 3:
-                handleUpdateEmployee();
-                break;
-            case 4:
-                handleDeleteEmployee();
-                break;
-            case 5:
-                handleDepartmentReport();
-                break;
-            case 6:
-                handleSearch();
-                break;
-            case 7:
-                handleFullInfo();
-                break;
-            case 8:
-                handleAddDepartment();
-                break;
-            case 9:
-                handleAddPosition();
-                break;
-            case 10:
-                handleClearEmployees();
-                break;
-            case 11:
-                handleDeleteDepartment();
-                break;
+            case 1: handleAddEmployee(); break;
+            case 2: handleViewEmployees(); break;
+            case 3: handleUpdateEmployee(); break;
+            case 4: handleDeleteEmployee(); break;
+            case 5: handleFullInfo(); break;
+            case 6: handleAddDepartment(); break;
+            case 7: handleDeleteDepartment(); break;
+            case 8: handleAddPosition(); break;
+            case 9: handleAddProject(); break;
+            case 10: handleViewProjects(); break;
+            case 11: handleAssignEmployeeToProject(); break;
+            case 12: handleDeleteProject(); break;
+            case 13: handleDepartmentReport(); break;
+            case 14: handleSearch(); break;
+            case 15: handleEmployeesWithProjects(); break;
+            case 16: handleProjectsReport(); break;
+            case 17: handleAboveAvgSalary(); break;
+            case 18: handleBudgetAnalysis(); break;
+            case 19: handleClearEmployees(); break;
             default:
                 cout << "Неверный выбор\n";
         }
     }
 }
 
+// ==================== СОТРУДНИКИ ====================
+
 void Menu::handleAddEmployee() {
     Employee emp;
+    emp.manager_id = 0;
     
-    cout << "\n--- Добавление сотрудника ---\n";
+    cout << "\n┌─── ДОБАВЛЕНИЕ СОТРУДНИКА ────────────────────┐\n";
     cout << "Имя: ";
     cin >> emp.first_name;
     cout << "Фамилия: ";
     cin >> emp.last_name;
-    
-    // Валидация email
-    do {
-        cout << "Email (должен быть уникальным): ";
-        cin >> emp.email;
-        if (!validateEmail(emp.email)) {
-            cout << "Некорректный email! Формат: example@domain.com\n";
-        }
-    } while (!validateEmail(emp.email));
-    
-    // Валидация телефона
-    do {
-        cout << "Телефон: ";
-        cin >> emp.phone;
-        if (!validatePhone(emp.phone)) {
-            cout << "Некорректный телефон! Примеры +79001234567\n";
-        }
-    } while (!validatePhone(emp.phone));
-    
+    cout << "Email (уникальный): ";
+    cin >> emp.email;
+    cout << "Телефон: ";
+    cin >> emp.phone;
     cout << "Дата приема (YYYY-MM-DD): ";
     cin >> emp.hire_date;
     cout << "Зарплата: ";
@@ -157,7 +146,8 @@ void Menu::handleAddEmployee() {
     auto departments = db.getDepartments();
     cout << "\nОтделы:\n";
     for (const auto& dept : departments) {
-        cout << dept.id << ". " << dept.name << " (" << dept.location << ")\n";
+        cout << "  " << dept.id << ". " << dept.name 
+             << " (" << dept.location << ")\n";
     }
     cout << "ID отдела: ";
     cin >> emp.department_id;
@@ -165,35 +155,32 @@ void Menu::handleAddEmployee() {
     auto positions = db.getPositions();
     cout << "\nДолжности:\n";
     for (const auto& pos : positions) {
-        cout << pos.id << ". " << pos.title 
-             << " (зарплата: " << pos.min_salary << " - " << pos.max_salary << ")\n";
+        cout << "  " << pos.id << ". " << pos.title 
+             << " (" << pos.min_salary << " - " << pos.max_salary << ")\n";
     }
     cout << "ID должности: ";
     cin >> emp.position_id;
     
+    cout << "ID менеджера (0 если нет): ";
+    cin >> emp.manager_id;
+    
     if (db.addEmployee(emp)) {
-        cout << "Сотрудник добавлен\n";
+        cout << "✓ Сотрудник успешно добавлен\n";
+    } else {
+        cout << "✗ Ошибка при добавлении\n";
     }
 }
 
 void Menu::handleViewEmployees() {
     auto employees = db.getAllEmployees();
     
-    cout << "\n--- Список сотрудников ---\n";
+    cout << "\n┌─── СПИСОК СОТРУДНИКОВ ───────────────────────────────────────────────────────────────────────────┐\n";
     cout << "+-----+----------------+----------------+------------------------------+---------------+------------+\n";
     cout << "| ID  | Имя            | Фамилия        | Email                        | Телефон       | Зарплата   |\n";
     cout << "+-----+----------------+----------------+------------------------------+---------------+------------+\n";
     
     for (const auto& emp : employees) {
-        cout << "| " << setw(3) << emp.id << " | ";
-        cout << align_string(emp.first_name, 14) << " | ";
-        cout << align_string(emp.last_name, 14) << " | ";
-        cout << align_string(emp.email, 28) << " | ";
-        cout << align_string(emp.phone, 13) << " | ";
-        
-        stringstream ss;
-        ss << fixed << setprecision(2) << emp.salary;
-        cout << align_string(ss.str(), 10, false) << " |" << endl;
+        emp.display();
     }
     cout << "+-----+----------------+----------------+------------------------------+---------------+------------+\n";
     cout << "Всего сотрудников: " << db.getEmployeeCount() << endl;
@@ -201,6 +188,7 @@ void Menu::handleViewEmployees() {
 
 void Menu::handleUpdateEmployee() {
     int id;
+    cout << "\n┌─── ОБНОВЛЕНИЕ ДАННЫХ СОТРУДНИКА ─────────────┐\n";
     cout << "ID сотрудника: ";
     cin >> id;
     
@@ -211,167 +199,88 @@ void Menu::handleUpdateEmployee() {
     cin >> emp.first_name;
     cout << "Новая фамилия: ";
     cin >> emp.last_name;
-    
-    do {
-        cout << "Email: ";
-        cin >> emp.email;
-        if (!validateEmail(emp.email)) {
-            cout << "Некорректный email!\n";
-        }
-    } while (!validateEmail(emp.email));
-    
-    do {
-        cout << "Телефон: ";
-        cin >> emp.phone;
-        if (!validatePhone(emp.phone)) {
-            cout << "Некорректный телефон! Пример: +79001234567\n";
-        }
-    } while (!validatePhone(emp.phone));
-    
+    cout << "Email: ";
+    cin >> emp.email;
+    cout << "Телефон: ";
+    cin >> emp.phone;
     cout << "Зарплата: ";
     cin >> emp.salary;
     cout << "ID отдела: ";
     cin >> emp.department_id;
     cout << "ID должности: ";
     cin >> emp.position_id;
+    cout << "ID менеджера (0 если нет): ";
+    cin >> emp.manager_id;
     
     if (db.updateEmployee(emp)) {
-        cout << "Обновлено\n";
+        cout << "✓ Данные обновлены\n";
+    } else {
+        cout << "✗ Ошибка обновления\n";
     }
 }
 
 void Menu::handleDeleteEmployee() {
     int id;
+    cout << "\n┌─── УДАЛЕНИЕ СОТРУДНИКА ──────────────────────┐\n";
     cout << "ID для удаления: ";
     cin >> id;
     
     if (db.deleteEmployee(id)) {
-        cout << "Удалено\n";
+        cout << "✓ Сотрудник удален\n";
+    } else {
+        cout << "✗ Ошибка удаления\n";
     }
-}
-
-void Menu::handleDepartmentReport() {
-    auto stats = db.getDepartmentStats();
-    
-    cout << "\n--- Статистика по отделам ---\n";
-    cout << "+----------------------+--------+---------------+---------------+---------------+\n";
-    cout << "| Отдел                | Кол-во | Ср. зарплата  | Мин.          | Макс.         |\n";
-    cout << "+----------------------+--------+---------------+---------------+---------------+\n";
-    
-    for (const auto& stat : stats) {
-        cout << "| " << align_string(stat.name, 20) << " | ";
-        cout << align_string(to_string(stat.employee_count), 6, false) << " | ";
-        
-        stringstream ss_avg, ss_min, ss_max;
-        ss_avg << fixed << setprecision(2) << stat.avg_salary;
-        ss_min << fixed << setprecision(2) << stat.min_salary;
-        ss_max << fixed << setprecision(2) << stat.max_salary;
-        
-        cout << align_string(ss_avg.str(), 13, false) << " | ";
-        cout << align_string(ss_min.str(), 13, false) << " | ";
-        cout << align_string(ss_max.str(), 13, false) << " |" << endl;
-    }
-    cout << "+----------------------+--------+---------------+---------------+---------------+\n";
-}
-
-void Menu::handleSearch() {
-    int dept_id;
-    cout << "ID отдела: ";
-    cin >> dept_id;
-    
-    auto employees = db.getEmployeesByDepartment(dept_id);
-    
-    cout << "\nСотрудники отдела:\n";
-    cout << "+-----+----------------+----------------+------------------------------+---------------+------------+\n";
-    cout << "| ID  | Имя            | Фамилия        | Email                        | Телефон       | Зарплата   |\n";
-    cout << "+-----+----------------+----------------+------------------------------+---------------+------------+\n";
-    
-    for (const auto& emp : employees) {
-        emp.display();
-    }
-    cout << "+-----+----------------+----------------+------------------------------+---------------+------------+\n";
 }
 
 void Menu::handleFullInfo() {
     auto employees = db.getEmployeesFull();
     
-    cout << "\n--- Полная информация ---\n";
+    cout << "\n┌─── ПОЛНАЯ ИНФОРМАЦИЯ О СОТРУДНИКАХ ──────────────────────────────────────────────────────────────┐\n";
     cout << "+-----+-------------+-------------+--------------------+---------------+------------+\n";
     cout << "| ID  | Имя         | Фамилия     | Отдел              | Должность     | Зарплата   |\n";
     cout << "+-----+-------------+-------------+--------------------+---------------+------------+\n";
     
     for (const auto& emp : employees) {
-        cout << "| " << setw(3) << emp.id << " | ";
-        cout << align_string(emp.first_name, 11) << " | ";
-        cout << align_string(emp.last_name, 11) << " | ";
-        cout << align_string(emp.department_name, 18) << " | ";
-        cout << align_string(emp.position_title, 13) << " | ";
-        
-        stringstream ss;
-        ss << fixed << setprecision(2) << emp.salary;
-        cout << align_string(ss.str(), 10, false) << " |" << endl;
+        emp.display();
     }
     cout << "+-----+-------------+-------------+--------------------+---------------+------------+\n";
 }
+
+// ==================== ОТДЕЛЫ ====================
+
 void Menu::handleAddDepartment() {
-    string name, location;
+    Department dept;
     
-    cout << "\n--- Добавление отдела ---\n";
+    cout << "\n┌─── ДОБАВЛЕНИЕ ОТДЕЛА ────────────────────────┐\n";
     cout << "Название отдела: ";
     cin.ignore();
-    getline(cin, name);
+    getline(cin, dept.name);
     cout << "Расположение: ";
-    getline(cin, location);
+    getline(cin, dept.location);
+    cout << "Бюджет: ";
+    cin >> dept.budget;
+    cout << "ID менеджера (0 если нет): ";
+    cin >> dept.manager_id;
     
-    if (db.addDepartment(name, location)) {
-        cout << "Отдел добавлен\n";
-    }
-}
-
-void Menu::handleAddPosition() {
-    string title;
-    double min_salary, max_salary;
-    
-    cout << "\n--- Добавление должности ---\n";
-    cout << "Название должности: ";
-    cin.ignore();
-    getline(cin, title);
-    cout << "Минимальная зарплата: ";
-    cin >> min_salary;
-    cout << "Максимальная зарплата: ";
-    cin >> max_salary;
-    
-    if (db.addPosition(title, min_salary, max_salary)) {
-        cout << "Должность добавлена\n";
-    }
-}
-
-void Menu::handleClearEmployees() {
-    char confirm;
-    cout << "\nВы уверены, что хотите удалить ВСЕХ сотрудников? (y/n): ";
-    cin >> confirm;
-    
-    if (confirm == 'y' || confirm == 'Y') {
-        if (db.clearAllEmployees()) {
-            cout << "Все сотрудники удалены\n";
-        }
+    if (db.addDepartment(dept)) {
+        cout << "✓ Отдел добавлен\n";
     } else {
-        cout << "Операция отменена\n";
+        cout << "✗ Ошибка добавления\n";
     }
 }
 
 void Menu::handleDeleteDepartment() {
-    cout << "\n--- Удаление отдела ---\n";
+    cout << "\n┌─── УДАЛЕНИЕ ОТДЕЛА ──────────────────────────┐\n";
     
-    // Показываем список отделов
     auto departments = db.getDepartments();
     cout << "\nСписок отделов:\n";
     for (const auto& dept : departments) {
-        cout << dept.id << ". " << dept.name << " (" << dept.location << ")\n";
+        cout << "  " << dept.id << ". " << dept.name 
+             << " (" << dept.location << ")\n";
     }
     
     int dept_id;
-    cout << "\nВведите ID отдела для удаления (0 для отмены): ";
+    cout << "\nID отдела для удаления (0 для отмены): ";
     cin >> dept_id;
     
     if (dept_id == 0) {
@@ -379,27 +288,13 @@ void Menu::handleDeleteDepartment() {
         return;
     }
     
-    // Проверяем, есть ли сотрудники в отделе
     int employee_count = db.getEmployeeCountByDepartment(dept_id);
     
     if (employee_count > 0) {
-        cout << "\nВНИМАНИЕ: В этом отделе работает " << employee_count << " сотрудник(ов)!\n";
-        cout << "Удаление отдела приведет к проблемам с данными сотрудников.\n";
-        cout << "Сначала переведите сотрудников в другие отделы или удалите их.\n";
-        cout << "\nВсе равно удалить отдел? (y/n): ";
-        
+        cout << "\n⚠ ВНИМАНИЕ: В отделе " << employee_count << " сотрудник(ов)!\n";
+        cout << "Удалить отдел? (y/n): ";
         char confirm;
         cin >> confirm;
-        
-        if (confirm != 'y' && confirm != 'Y') {
-            cout << "Операция отменена\n";
-            return;
-        }
-    } else {
-        cout << "\nВы уверены, что хотите удалить этот отдел? (y/n): ";
-        char confirm;
-        cin >> confirm;
-        
         if (confirm != 'y' && confirm != 'Y') {
             cout << "Операция отменена\n";
             return;
@@ -407,8 +302,267 @@ void Menu::handleDeleteDepartment() {
     }
     
     if (db.deleteDepartment(dept_id)) {
-        cout << "Отдел успешно удален\n";
+        cout << "✓ Отдел удален\n";
     } else {
-        cout << "Не удалось удалить отдел. Возможно, он не существует.\n";
+        cout << "✗ Ошибка удаления\n";
+    }
+}
+
+void Menu::handleDepartmentReport() {
+    auto stats = db.getDepartmentStats();
+    
+    cout << "\n┌─── СТАТИСТИКА ПО ОТДЕЛАМ ────────────────────────────────────────────────────────────────────────┐\n";
+    cout << "+----------------------+--------+---------------+---------------+---------------+---------------+\n";
+    cout << "| Отдел                | Кол-во | Ср. зарплата  | Мин.          | Макс.         | Общая         |\n";
+    cout << "+----------------------+--------+---------------+---------------+---------------+---------------+\n";
+    
+    for (const auto& stat : stats) {
+        cout << "| " << align_string(stat.name, 20) << " | ";
+        cout << align_string(to_string(stat.employee_count), 6, false) << " | ";
+        
+        stringstream ss_avg, ss_min, ss_max, ss_total;
+        ss_avg << fixed << setprecision(2) << stat.avg_salary;
+        ss_min << fixed << setprecision(2) << stat.min_salary;
+        ss_max << fixed << setprecision(2) << stat.max_salary;
+        ss_total << fixed << setprecision(2) << stat.total_salary;
+        
+        cout << align_string(ss_avg.str(), 13, false) << " | ";
+        cout << align_string(ss_min.str(), 13, false) << " | ";
+        cout << align_string(ss_max.str(), 13, false) << " | ";
+        cout << align_string(ss_total.str(), 13, false) << " |" << endl;
+    }
+    cout << "+----------------------+--------+---------------+---------------+---------------+---------------+\n";
+}
+
+// ==================== ДОЛЖНОСТИ ====================
+
+void Menu::handleAddPosition() {
+    Position pos;
+    
+    cout << "\n┌─── ДОБАВЛЕНИЕ ДОЛЖНОСТИ ─────────────────────┐\n";
+    cout << "Название должности: ";
+    cin.ignore();
+    getline(cin, pos.title);
+    cout << "Минимальная зарплата: ";
+    cin >> pos.min_salary;
+    cout << "Максимальная зарплата: ";
+    cin >> pos.max_salary;
+    cout << "Описание: ";
+    cin.ignore();
+    getline(cin, pos.description);
+    
+    if (db.addPosition(pos)) {
+        cout << "✓ Должность добавлена\n";
+    } else {
+        cout << "✗ Ошибка добавления\n";
+    }
+}
+
+// ==================== ПРОЕКТЫ ====================
+
+void Menu::handleAddProject() {
+    Project proj;
+    
+    cout << "\n┌─── ДОБАВЛЕНИЕ ПРОЕКТА ───────────────────────┐\n";
+    cout << "Название проекта: ";
+    cin.ignore();
+    getline(cin, proj.name);
+    cout << "Описание: ";
+    getline(cin, proj.description);
+    cout << "Дата начала (YYYY-MM-DD): ";
+    cin >> proj.start_date;
+    cout << "Дата окончания (YYYY-MM-DD): ";
+    cin >> proj.end_date;
+    cout << "Бюджет: ";
+    cin >> proj.budget;
+    
+    cout << "\nСтатус:\n";
+    cout << "  1. планирование\n";
+    cout << "  2. в работе\n";
+    cout << "  3. завершен\n";
+    cout << "  4. приостановлен\n";
+    cout << "Выбор: ";
+    int status_choice;
+    cin >> status_choice;
+    
+    switch (status_choice) {
+        case 1: proj.status = "планирование"; break;
+        case 2: proj.status = "в работе"; break;
+        case 3: proj.status = "завершен"; break;
+        case 4: proj.status = "приостановлен"; break;
+        default: proj.status = "планирование";
+    }
+    
+    auto departments = db.getDepartments();
+    cout << "\nОтделы:\n";
+    for (const auto& dept : departments) {
+        cout << "  " << dept.id << ". " << dept.name << "\n";
+    }
+    cout << "ID отдела: ";
+    cin >> proj.department_id;
+    
+    if (db.addProject(proj)) {
+        cout << "✓ Проект добавлен\n";
+    } else {
+        cout << "✗ Ошибка добавления\n";
+    }
+}
+
+void Menu::handleViewProjects() {
+    auto projects = db.getProjects();
+    
+    cout << "\n┌─── СПИСОК ПРОЕКТОВ ──────────────────────────────────────────────────────────────────────────────┐\n";
+    for (const auto& proj : projects) {
+        cout << "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+        cout << "ID: " << proj.id << "\n";
+        cout << "Название: " << proj.name << "\n";
+        cout << "Описание: " << proj.description << "\n";
+        cout << "Период: " << proj.start_date << " — " << proj.end_date << "\n";
+        cout << "Бюджет: " << fixed << setprecision(2) << proj.budget << "\n";
+        cout << "Статус: " << proj.status << "\n";
+    }
+    cout << "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+}
+
+void Menu::handleDeleteProject() {
+    int id;
+    cout << "\n┌─── УДАЛЕНИЕ ПРОЕКТА ─────────────────────────┐\n";
+    cout << "ID проекта для удаления: ";
+    cin >> id;
+    
+    if (db.deleteProject(id)) {
+        cout << "✓ Проект удален\n";
+    } else {
+        cout << "✗ Ошибка удаления\n";
+    }
+}
+
+void Menu::handleAssignEmployeeToProject() {
+    EmployeeProject assignment;
+    
+    cout << "\n┌─── НАЗНАЧЕНИЕ НА ПРОЕКТ ─────────────────────┐\n";
+    
+    auto employees = db.getAllEmployees();
+    cout << "\nСотрудники:\n";
+    for (const auto& emp : employees) {
+        cout << "  " << emp.id << ". " << emp.first_name 
+             << " " << emp.last_name << "\n";
+    }
+    cout << "ID сотрудника: ";
+    cin >> assignment.employee_id;
+    
+    auto projects = db.getProjects();
+    cout << "\nПроекты:\n";
+    for (const auto& proj : projects) {
+        cout << "  " << proj.id << ". " << proj.name << "\n";
+    }
+    cout << "ID проекта: ";
+    cin >> assignment.project_id;
+    
+    cout << "Роль в проекте: ";
+    cin.ignore();
+    getline(cin, assignment.role);
+    
+    cout << "Дата назначения (YYYY-MM-DD): ";
+    cin >> assignment.assigned_date;
+    
+    cout << "Часов выделено: ";
+    cin >> assignment.hours_allocated;
+    
+    if (db.assignEmployeeToProject(assignment)) {
+        cout << "✓ Сотрудник назначен на проект\n";
+    } else {
+        cout << "✗ Ошибка назначения\n";
+    }
+}
+
+void Menu::handleProjectsReport() {
+    auto projects = db.getProjectsWithEmployees();
+    
+    cout << "\n┌─── ПРОЕКТЫ СО СТАТИСТИКОЙ ───────────────────────────────────────────────────────────────────────┐\n";
+    cout << "+-----+---------------------------+--------------+--------------+----------+------------+\n";
+    cout << "| ID  | Проект                    | Статус       | Бюджет       | Сотр.    | Часов      |\n";
+    cout << "+-----+---------------------------+--------------+--------------+----------+------------+\n";
+    
+    for (const auto& proj : projects) {
+        proj.display();
+    }
+    cout << "+-----+---------------------------+--------------+--------------+----------+------------+\n";
+}
+
+// ==================== АНАЛИТИКА ====================
+
+void Menu::handleSearch() {
+    int dept_id;
+    cout << "\n┌─── ПОИСК ПО ОТДЕЛУ ──────────────────────────┐\n";
+    cout << "ID отдела: ";
+    cin >> dept_id;
+    
+    auto employees = db.getEmployeesByDepartment(dept_id);
+    
+    cout << "\n+-----+----------------+----------------+------------------------------+---------------+------------+\n";
+    cout << "| ID  | Имя            | Фамилия        | Email                        | Телефон       | Зарплата   |\n";
+    cout << "+-----+----------------+----------------+------------------------------+---------------+------------+\n";
+    
+    for (const auto& emp : employees) {
+        emp.display();
+    }
+    cout << "+-----+----------------+----------------+------------------------------+---------------+------------+\n";
+    cout << "Найдено сотрудников: " << employees.size() << endl;
+}
+
+void Menu::handleEmployeesWithProjects() {
+    auto data = db.getEmployeesWithProjects();
+    
+    cout << "\n┌─── СОТРУДНИКИ И ИХ ПРОЕКТЫ ──────────────────────────────────────────────────────────────────────┐\n";
+    cout << "+-----+----------------------+---------------------------+--------------------+----------+--------------+\n";
+    cout << "| ID  | Сотрудник            | Проект                    | Роль               | Часов    | Статус       |\n";
+    cout << "+-----+----------------------+---------------------------+--------------------+----------+--------------+\n";
+    
+    for (const auto& item : data) {
+        item.display();
+    }
+    cout << "+-----+----------------------+---------------------------+--------------------+----------+--------------+\n";
+}
+
+void Menu::handleAboveAvgSalary() {
+    auto employees = db.getAboveAvgSalaryEmployees();
+    
+    cout << "\n┌─── СОТРУДНИКИ С ЗАРПЛАТОЙ ВЫШЕ СРЕДНЕЙ ПО ОТДЕЛУ ────────────────────────────────────────────────┐\n";
+    cout << "+-----+----------------------+--------------------+------------+------------+\n";
+    cout << "| ID  | Сотрудник            | Отдел              | Зарплата   | Средняя    |\n";
+    cout << "+-----+----------------------+--------------------+------------+------------+\n";
+    
+    for (const auto& emp : employees) {
+        emp.display();
+    }
+    cout << "+-----+----------------------+--------------------+------------+------------+\n";
+}
+
+void Menu::handleBudgetAnalysis() {
+    auto analysis = db.getDepartmentBudgetAnalysis();
+    
+    cout << "\n┌─── АНАЛИЗ БЮДЖЕТА ОТДЕЛОВ ───────────────────────────────────────────────────────────────────────┐\n";
+    cout << "+--------------------+--------------+--------------+--------------+--------------+\n";
+    cout << "| Отдел              | Бюджет       | ЗП (год)     | Проекты      | Остаток      |\n";
+    cout << "+--------------------+--------------+--------------+--------------+--------------+\n";
+    
+    for (const auto& item : analysis) {
+        item.display();
+    }
+    cout << "+--------------------+--------------+--------------+--------------+--------------+\n";
+}
+
+void Menu::handleClearEmployees() {
+    char confirm;
+    cout << "\n⚠ ВНИМАНИЕ! Удалить ВСЕХ сотрудников? (y/n): ";
+    cin >> confirm;
+    
+    if (confirm == 'y' || confirm == 'Y') {
+        if (db.clearAllEmployees()) {
+            cout << "✓ Все сотрудники удалены\n";
+        }
+    } else {
+        cout << "Операция отменена\n";
     }
 }

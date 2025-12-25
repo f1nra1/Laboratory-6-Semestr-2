@@ -25,26 +25,45 @@ public:
     bool connect(const string& conn_string);
     void disconnect();
     
+    // Операции с сотрудниками
     vector<Employee> getAllEmployees();
     Employee getEmployeeById(int id);
     bool addEmployee(const Employee& emp);
     bool updateEmployee(const Employee& emp);
     bool deleteEmployee(int id);
-    
-    vector<Department> getDepartments();
-    vector<Position> getPositions();
-    bool addDepartment(const string& name, const string& location);
-    bool addPosition(const string& title, double min_salary, double max_salary);
-    
     vector<Employee> getEmployeesByDepartment(int dept_id);
+    
+    // Операции с отделами
+    vector<Department> getDepartments();
+    bool addDepartment(const Department& dept);
+    bool deleteDepartment(int id);
+    int getEmployeeCountByDepartment(int dept_id);
+    
+    // Операции с должностями
+    vector<Position> getPositions();
+    bool addPosition(const Position& pos);
+    
+    // Операции с проектами
+    vector<Project> getProjects();
+    bool addProject(const Project& proj);
+    bool deleteProject(int id);
+    
+    // Назначения на проекты
+    bool assignEmployeeToProject(const EmployeeProject& assignment);
+    bool removeEmployeeFromProject(int employee_id, int project_id);
+    
+    // Аналитические запросы
     double getAverageSalaryByDepartment(int dept_id);
     int getEmployeeCount();
     vector<EmployeeFull> getEmployeesFull();
     vector<DepartmentStats> getDepartmentStats();
+    vector<EmployeeWithProject> getEmployeesWithProjects();
+    vector<ProjectWithStats> getProjectsWithEmployees();
+    vector<EmployeeAboveAvg> getAboveAvgSalaryEmployees();
+    vector<DepartmentBudgetAnalysis> getDepartmentBudgetAnalysis();
     
+    // Служебные
     bool clearAllEmployees();
-    bool deleteDepartment(int id);
-    int getEmployeeCountByDepartment(int dept_id);
 };
 
 #endif
